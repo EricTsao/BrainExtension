@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "List";
+}
+
+<script>
+    var taskModule = angular.module("TaskModule", []);
+
+    taskModule.directive('datepicker', function () {
+        return function (scope, element, attrs) {
+            element.datepicker({
+                dateFormat: 'yy-mm-dd',
+                onSelect: function (dateText) {
+                    var modelPath = $(this).attr('ng-model').split(' | ')[0];
+                    $putObject(modelPath, scope, new Date(dateText));
+                    scope.$apply();
+                }
+            });
+        }
+    });
+
+    taskModule.controller("TaskController", function ($scope, $http) {
+        var ResetCurrentTask = function () {
+            $scope.currentTask = {
+                Name: "",
+                Description: "",
+                StartTime: new Date(),
+                EndTime: new Date(),
+                Status: "Wait"
+            };
+        }
+
+        $scope.currentArea = "ListArea";
+
+        $http.post("@Url.Content("~/Task/QueryTasks")")
+            .success(function (data, status, headers, config) {
+                for (var i in data) {
+                    data[i].StartTime = $.toJsDate(data[i].StartTime);
+                    data[i].EndTime = $.toJsDate(data[i].EndTime);
+                }
+
+                $scope.tasks = data;
+            })
+            .error(function (data, status, headers, config) {
+
+            });
+
+        $scope.GoToEditArea = function (event) {
+            $scope.currentArea = "EditArea";
+
+            var taskId = $(event.target).attr("taskId");
+
+            ResetCurrentTask();
+
+            for (var i in $scope.tasks) {
+                if ($scope.tasks[i].Id == taskId) {
+                    $scope.currentTask = $scope.tasks[i];
+                    break;
+                }
+            }
+        }
+
+        $scope.DeleteTask = function (event) {
+           var taskId = $(event.target).attr("taskId");
+
+            $http.post("@Url.Content("~/Task/Delete")", { Id: taskId })
+           .success(function (data, status, headers, config) {
+               if (data == "Done") {
+                   for (var i in $scope.tasks) {
+                       if ($scope.tasks[i].Id == taskId) {
+                           $scope.tasks.splice(i, 1);
+                           break;
+                       }
+                   }
+               }
+           })
+           .error(function (data, status, headers, config) {
+
+           });
+        }
+
+        $scope.SaveCurrentTask = function (event) {
+            $http.post("@Url.Content("~/Task/Edit")", $scope.currentTask)
+            .success(function (data, status, headers, config) {
+                if (!$scope.currentTask.Id) {
+                    $scope.currentTask.Id = data;
+                    $scope.tasks.push($scope.currentTask);
+                }
+
+                $scope.currentArea = "ListArea";
+            })
+            .error(function (data, status, headers, config) {
+
+            });
+        }
+
+        $scope.CreateNewTask = function (event) {
+            $scope.currentArea = "EditArea";
+
+            ResetCurrentTask();
+        }
+
+        $scope.BackToList = function (event) {
+            $scope.currentArea = "ListArea";
+
+            ResetCurrentTask();
+        }
+    });
+</script>
+
+<style>
+
+</style>
+
+<div>
+    <h1>Task Manager</h1>
+</div>
+
+<div ng-app="TaskModule" ng-controller="TaskController">
+    @{Html.RenderPartial("TaskTitleBar");}
+    <div style="margin-bottom: 10px">
+        <input type="button" value="New" ng-click="CreateNewTask($event)" />
+    </div>
+    <div ng-show="currentArea=='ListArea'">
+        <div>
+            <div ng-repeat="task in tasks" class="TaskItem">
+                <div class="col-sm-16">
+                    <a ng-click="GoToEditArea($event)" taskid="{{task.Id}}">
+                        {{task.StartTime | date : 'yyyy-MM-dd'}} ~ {{task.EndTime | date : 'yyyy-MM-dd'}} : {{task.Name}}
+                    </a>
+                    <button type="button" class="close" aria-label="Close" ng-click="DeleteTask($event)" taskid="{{task.Id}}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="col-sm-16">
+                    <pre>{{task.Description}}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="currentArea=='EditArea'">
+        <form name="formEditTask" class="form-horizontal">
+            <div class="form-group" ng-class="{'has-error':formEditTask.inputTaskName.$invalid}">
+                <label for="inputTaskName" class="col-sm-2 control-label">Task Name</label>
+                <div class="col-sm-14">
+                    <input type="text" class="form-control" name="inputTaskName" placeholder="Task Name" ng-model="currentTask.Name" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputDescription" class="col-sm-2 control-label">Description</label>
+                <div class="col-sm-14">
+                    <textarea class="form-control" name="inputDescription" placeholder="Description" rows="6" ng-model="currentTask.Description"></textarea>
+                </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error':formEditTask.inputStartTime.$invalid}">
+                <label for="inputStartTime" class="col-sm-2 control-label">Start Time</label>
+                <div class="col-sm-14">
+                    <input type="date" class="form-control" name="inputStartTime" datepicker ng-model="currentTask.StartTime" required>
+                </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error':formEditTask.inputEndTime.$invalid}">
+                <label for="inputEndTime" class="col-sm-2 control-label">End Time</label>
+                <div class="col-sm-14">
+                    <input type="date" class="form-control" name="inputEndTime" datepicker ng-model="currentTask.EndTime" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-14">
+                    <select class="form-control" ng-model="currentTask.Status">
+                        <option>Wait</option>
+                        <option>Done</option>
+                        <option>Cancel</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-14">
+                    <button type="button" class="btn btn-default" ng-disabled="formEditTask.$invalid" ng-click="SaveCurrentTask($event)">Submit</button>
+                    <button type="button" class="btn btn-default" ng-click="BackToList($event)">Back</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
