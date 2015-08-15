@@ -1,0 +1,5 @@
+C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\bin\Release\BrainExtension.Data.dll
+C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\bin\Release\BrainExtension.Data.pdb
+C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\obj\Release\BrainExtension.Data.csprojResolveAssemblyReference.cache
+C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\obj\Release\BrainExtension.Data.dll
+C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\obj\Release\BrainExtension.Data.pdb

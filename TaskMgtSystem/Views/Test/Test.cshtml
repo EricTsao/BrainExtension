@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Test";
+}
+
+<h2>Test</h2>
+
+<script>
+    function createDateAsUTC(date) {
+        return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+    }
+
+    
+    console.log(typeof '123' === 'object');
+    console.log(typeof 123 === 'object');
+    console.log(typeof new Date("2015/8/7") === 'object');
+    console.log(typeof ['1','2'] === 'object');
+
+    var dt = new Date(2015, 8, 4);
+
+    console.log(createDateAsUTC(dt));
+
+    var obj = [{ Date1: new Date(2015, 8, 4), Son: [{ Date1: new Date(2015, 8, 4) }] }, { Date1: new Date(2015, 8, 4), Son: [{ Date1: new Date(2015, 8, 4) }] }];
+
+    var testModule = angular.module("TestModule", []);
+
+    testModule.controller("TestController", function ($scope, $http) {
+        $http.post("@Url.Content("~/Test/GetDate")")
+                .success(function (data, status, headers, config) {
+                    console.log("Local : " + data.LocalDate);
+                    console.log("UTC : " + data.UTCDate);
+                    console.log("Local : " + $.toJsDate(data.LocalDate));
+                    console.log("UTC : " + $.toJsDate(data.UTCDate));
+                    console.log("Local : " + data.LocalStr);
+                    console.log("UTC : " + data.UTCStr);
+                })
+                .error(function (data, status, headers, config) {
+
+                });
+
+        var now = new Date();
+        $http.post("@Url.Content("~/Test/PostDate")", { LocalDate: now, UTCDate: now, LocalStr: "123", UTCStr: "456" })
+                .success(function (data, status, headers, config) {
+                    console.log("Local : " + data.LocalDate);
+                    console.log("UTC : " + data.UTCDate);
+                    console.log("Local : " + $.toJsDate(data.LocalDate));
+                    console.log("UTC : " + $.toJsDate(data.UTCDate));
+                    console.log("Local : " + data.LocalStr);
+                    console.log("UTC : " + data.UTCStr);
+                })
+                .error(function (data, status, headers, config) {
+
+                });
+    });
+</script>
+
+<div ng-app="TestModule" ng-controller="TestController">
+
+</div>
