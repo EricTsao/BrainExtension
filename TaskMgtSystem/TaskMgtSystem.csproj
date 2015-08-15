@@ -123,6 +123,9 @@
     <Content Include="Content\Bootstrap\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Bootstrap\js\bootstrap.js" />
     <Content Include="Content\Bootstrap\js\bootstrap.min.js" />
+    <Content Include="Content\jQuery-DatePair\jquery.datepair.min.js" />
+    <Content Include="Content\jQuery-TimePicker\jquery.timepicker.css" />
+    <Content Include="Content\jQuery-TimePicker\jquery.timepicker.min.js" />
     <Content Include="Content\jQueryUI\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\jQueryUI\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\jQueryUI\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -155,7 +158,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Task\Task.cshtml" />
+    <Content Include="Views\Task\TaskEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BrainExtension.Logical\BrainExtension.Logical.csproj">
@@ -179,7 +182,10 @@
     <Content Include="Views\Task\List.cshtml" />
     <Content Include="Views\Task\Calendar.cshtml" />
     <Content Include="Views\Task\TaskTitleBar.cshtml" />
-    <Content Include="Views\Test\Test.cshtml" />
+    <Content Include="Views\Test\Test1.cshtml" />
+    <Content Include="Views\Test\Test2-1.cshtml" />
+    <Content Include="Views\Test\Test2-2.cshtml" />
+    <Content Include="Views\Task\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

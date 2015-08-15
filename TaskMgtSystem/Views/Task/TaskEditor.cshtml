@@ -1,0 +1,128 @@
+﻿<script>
+    Date.prototype.addHours = function (h) {
+        this.setHours(this.getHours() + h);
+        return this;
+    }
+
+    angular.module("TaskMgt.TaskEditor", [])
+    .directive('ngModel', function ($filter) {
+        return {
+            require: '?ngModel',
+            link: function(scope, elem, attr, ngModel) {
+                if( !ngModel )
+                    return;
+                if( attr.type !== 'time' )
+                    return;
+                    
+                ngModel.$formatters.unshift(function(value) {
+                    return value.replace(/\d{2}:\d{2}\.\d{3}$/, '00');
+                });
+            }
+        }   
+    })
+    .directive('datepicker', function () {
+        return function (scope, element, attrs) {
+            element.datepicker({
+                dateFormat: 'yy-mm-dd',
+                onClose: function (dateText) {
+                    scope.$apply();
+                }
+            });
+        }
+    })
+    .directive('hourpicker', function () {
+        return function (scope, element, attrs) {
+            element.timepicker({
+                'timeFormat': 'H:i',
+                'step': 60,
+                'scrollDefault': 'now'
+            }).on('changeTime', function () {
+                scope.$apply();
+            });
+        }
+    })
+    .controller("TaskEditorController", function ($scope, $http) {
+        $scope.$on('TaskEditorOpen', function (event, TaskData) {
+            var now = new Date();
+            var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            var startTime = new Date(1970, 0, 1, now.getHours(), 0, 0, 0);
+            var endTime = new Date(1970, 0, 1, now.getHours(), 0, 0, 0);
+            $scope.CurrentTask = TaskData ? $.extend(true, {}, TaskData) : {
+                Name: "",
+                Description: "",
+                StartDate: startDate,
+                StartTime: startTime,
+                EndDate: endDate,
+                EndTime: endTime,
+                Status: "Wait"
+            };
+        });
+
+        $scope.SaveCurrentTask = function (event) {
+            $scope.CurrentTask.StartDateTime = new Date($scope.CurrentTask.StartDate.getTime()).addHours($scope.CurrentTask.StartTime.getHours())
+
+            $scope.CurrentTask.EndDateTime = new Date($scope.CurrentTask.EndDate.getTime()).addHours($scope.CurrentTask.EndTime.getHours())
+
+            $http.post("@Url.Content("~/Task/Edit")", $scope.CurrentTask)
+            .success(function (data, status, headers, config) {
+                $scope.CurrentTask.Id = data;
+                alert("Save Task Success.");
+                $scope.$emit('TaskEditorSaveSuccess', $scope.CurrentTask);
+            })
+            .error(function (data, status, headers, config) {
+                alert("Save Task Fail.");
+            });
+        }
+    });
+</script>
+
+<div ng-controller="TaskEditorController">
+    <div name="formEditTask" class="form-horizontal">
+        <div class="form-group">
+            <label for="inputTaskName" class="col-sm-2 control-label">Task Name</label>
+            <div class="col-sm-14">
+                <input type="text" class="form-control" placeholder="Task Name" ng-model="CurrentTask.Name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-14">
+                <textarea class="form-control" placeholder="Description" rows="6" ng-model="CurrentTask.Description"></textarea>
+            </div>
+        </div>
+        <div class="form-group"">
+            <label class="col-sm-2 control-label">Start Time</label>
+            <div class="form-inline col-sm-14">
+                <input datepicker type="date" class="form-control" ng-model="CurrentTask.StartDate">
+                <input hourpicker type="time" class="form-control" ng-model="CurrentTask.StartTime" />
+                {{CurrentTask.StartDate | date : 'yyyy-MM-dd'}}
+                {{CurrentTask.StartTime | date : 'HH:ss'}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">End Time</label>
+            <div class="form-inline col-sm-14">
+                <input datepicker type="date" class="form-control" ng-model="CurrentTask.EndDate">
+                <input hourpicker type="time" class="form-control" ng-model="CurrentTask.EndTime" />
+                {{CurrentTask.EndDate | date : 'yyyy-MM-dd'}}
+                {{CurrentTask.EndTime | date : 'HH:ss'}}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-14">
+                <select class="form-control" ng-model="CurrentTask.Status">
+                    <option>Wait</option>
+                    <option>Done</option>
+                    <option>Cancel</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-14">
+                <button type="button" class="btn btn-default" ng-click="SaveCurrentTask($event)">Submit</button>
+                <button type="button" class="btn btn-default" ng-click="Cancel($event)">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

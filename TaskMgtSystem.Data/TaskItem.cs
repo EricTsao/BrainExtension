@@ -17,11 +17,13 @@ namespace BrainExtension.Data
         private string _description;
         public string Description { get { return _description; } set { _description = value ?? ""; } }
 
-        private DateTime _startTime;
-        public DateTime StartTime { get { return _startTime; } set { _startTime = value; } }
+        public DateTime StartDate { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime StartDateTime { get; set; }
 
-        private DateTime _endTime;
-        public DateTime EndTime { get { return _endTime; } set { _endTime = value; } }
+        public DateTime EndDate { get; set; }
+        public DateTime EndTime { get; set; }
+        public DateTime EndDateTime { get; set; }
 
         public string Status { get; set; }
 
@@ -29,13 +31,11 @@ namespace BrainExtension.Data
 
         public string CreateBy { get; set; }
 
-        private DateTime _createTime;
-        public DateTime CreateTime { get { return _createTime; } set { _createTime = value; } }
+        public DateTime CreateDateTime { get; set; }
 
         public string UpdateBy { get; set; }
 
-        private DateTime _updateTime;
-        public DateTime UpdateTime { get { return _updateTime; } set { _updateTime = value; } }
+        public DateTime UpdateDateTime { get; set; }
 
         public List<Member> Members { get; set; }
     }

@@ -15,7 +15,7 @@ namespace TaskMgtSystem.Controllers.Task
     {
         public ActionResult Index()
         {
-            return View("List");
+            return View("Index");
         }
 
         public ActionResult List()
@@ -39,12 +39,11 @@ namespace TaskMgtSystem.Controllers.Task
         {
             task.IsDelete = false;
             task.CreateBy = User.Identity.Name;
-            task.CreateTime = DateTime.Now;
+            task.CreateDateTime = DateTime.Now;
             task.UpdateBy = User.Identity.Name;
-            task.UpdateTime = DateTime.Now;
+            task.UpdateDateTime = DateTime.Now;
 
             var taskList = new List<TaskItem>();
-
 
             taskList.Add(task);
 
@@ -54,14 +53,14 @@ namespace TaskMgtSystem.Controllers.Task
         public ActionResult QueryTasks()
         {
             var taskList = TaskManager.QueryTasks(new TaskQueryFilter() { });
-
+           
             return Json(taskList);
         }
 
-        public ActionResult GetCalendar(int startWeekFromNow)
+        public ActionResult GetCalendar(int startWeekFromNow, int weekCount, int timezoneOffset)
         {
             DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
-            DateTime today = DateTime.Now.Date;
+            DateTime today = DateTime.Now.ToUniversalTime().AddMinutes(-1 * timezoneOffset).Date;
             Calendar cal = dfi.Calendar;
 
             var dayOfWeek = cal.GetDayOfWeek(today);
@@ -69,18 +68,16 @@ namespace TaskMgtSystem.Controllers.Task
             var daysOfWeek = (int)dayOfWeek;
             var firstDayOfThisWeek = today.AddDays(-1 * daysOfWeek);
             var firstDayOfCurrentWeek = firstDayOfThisWeek.AddDays(7 * startWeekFromNow);
-            var firstDayOfLastWeek = firstDayOfCurrentWeek.AddDays(-7);
 
-            var weekCount = 10;
             var dayCount = 7;
 
-            var allTasks = TaskManager.QueryTasksByDateRange(firstDayOfLastWeek, firstDayOfLastWeek.AddDays((5 * 7) - 1)); ;
+            var allTasks = TaskManager.QueryTasksByDateRange(firstDayOfCurrentWeek, firstDayOfCurrentWeek.AddDays((5 * 7) - 1)); ;
 
             var weeks = new List<WeekItem>();
 
             for (int i = 0; i < weekCount; i++)
             {
-                var firstDayOfWeek = firstDayOfLastWeek.AddDays(i * dayCount);
+                var firstDayOfWeek = firstDayOfCurrentWeek.AddDays(i * dayCount);
                 var weekFromNow = (firstDayOfWeek - firstDayOfThisWeek).Days / 7;
                 var week = new WeekItem()
                 {
@@ -103,7 +100,7 @@ namespace TaskMgtSystem.Controllers.Task
                         Date = day
                     };
 
-                    dayItem.Tasks = allTasks.Where(d => d.StartTime.Date <= day && d.EndTime.Date >= day).ToList();
+                    dayItem.Tasks = allTasks.Where(d => day >= d.StartDateTime.AddMinutes(-1 * timezoneOffset).Date && day <= d.EndDateTime.AddMinutes(-1 * timezoneOffset).Date).ToList();
 
                     days.Add(dayItem);
                 }

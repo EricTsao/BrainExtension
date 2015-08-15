@@ -1,0 +1,22 @@
+﻿<script>
+    angular.module("TaskMgt", ["TaskMgt.TaskEditor"])
+    .controller("TaskMgtController", function ($scope, $http) {
+        $scope.$on('TaskEditorSaveSuccess', function (event, SavedTask) {
+            alert("got it");
+        });
+        $scope.OpenTaskEditor = function (event) {
+            $scope.$broadcast('TaskEditorOpen', null);
+        };
+    });
+</script>
+<div ng-app="TaskMgt">
+    <div>
+        <h1>Task Manager</h1>
+    </div>
+    <div ng-controller="TaskMgtController">
+        <div>
+            @{Html.RenderPartial("TaskEditor");}
+        </div>
+        <button type="button" class="btn btn-default" ng-click="OpenTaskEditor($event)">Open</button>
+    </div>
+</div>

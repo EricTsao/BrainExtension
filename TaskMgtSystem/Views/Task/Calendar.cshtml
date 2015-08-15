@@ -28,14 +28,17 @@
             }
             $scope.dataloading = true;
 
-            var startWeekFromNow = 0;
+            var startWeekFromNow = -1;
+            var weekCount = 9;
             if (type == "GetPast") {
-                startWeekFromNow = $scope.minWeekFromNow - 4;
+                weekCount = 4;
+                startWeekFromNow = $scope.minWeekFromNow - weekCount;
             } else if (type == "GetFuture") {
-                startWeekFromNow = $scope.maxWeekFromNow;
+                weekCount = 4;
+                startWeekFromNow = $scope.maxWeekFromNow + 1;
             }
-
-            $http.post("@Url.Content("~/Task/GetCalendar")", { startWeekFromNow: startWeekFromNow })
+            
+            $http.post("@Url.Content("~/Task/GetCalendar")", { startWeekFromNow: startWeekFromNow, weekCount : weekCount, timezoneOffset : (new Date()).getTimezoneOffset() })
             .success(function (data, status, headers, config) {
                 if (data.length == 0) return;
 
@@ -78,9 +81,9 @@
 <div>
     <h2>Calendar</h2>
 </div>
-
 <div ng-app="TaskModule" ng-controller="TaskController">
     @{Html.RenderPartial("TaskTitleBar");}
+{{minWeekFromNow}} ~ {{maxWeekFromNow}}
      <a ng-click="GetCalendar('GetPast')" taskid="{{task.Id}}">
          Get more history
      </a>

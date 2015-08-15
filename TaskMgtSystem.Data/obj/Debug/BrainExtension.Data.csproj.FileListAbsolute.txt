@@ -3,3 +3,8 @@ C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\bin\Debug\BrainExtension.Data.pdb
 C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\obj\Debug\BrainExtension.Data.csprojResolveAssemblyReference.cache
 C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\obj\Debug\BrainExtension.Data.dll
 C:\Projects\TaskMgtSystem\TaskMgtSystem.Data\obj\Debug\BrainExtension.Data.pdb
+C:\Git\BrainExtension\TaskMgtSystem.Data\bin\Debug\BrainExtension.Data.dll
+C:\Git\BrainExtension\TaskMgtSystem.Data\bin\Debug\BrainExtension.Data.pdb
+C:\Git\BrainExtension\TaskMgtSystem.Data\obj\Debug\BrainExtension.Data.csprojResolveAssemblyReference.cache
+C:\Git\BrainExtension\TaskMgtSystem.Data\obj\Debug\BrainExtension.Data.dll
+C:\Git\BrainExtension\TaskMgtSystem.Data\obj\Debug\BrainExtension.Data.pdb

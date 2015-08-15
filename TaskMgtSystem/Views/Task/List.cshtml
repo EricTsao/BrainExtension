@@ -147,10 +147,6 @@
     });
 </script>
 
-<style>
-
-</style>
-
 <div>
     <h1>Task Manager</h1>
 </div>
@@ -165,7 +161,7 @@
             <div ng-repeat="task in tasks" class="TaskItem">
                 <div class="col-sm-16">
                     <a ng-click="GoToEditArea($event)" taskid="{{task.Id}}">
-                        {{task.StartTime | date : 'yyyy-MM-dd hh:mm'}} ~ {{task.EndTime | date : 'yyyy-MM-dd hh:mm'}} : {{task.Name}}
+                        {{task.StartDateTime | date : 'yyyy-MM-dd HH:mm'}} ~ {{task.EndDateTime | date : 'yyyy-MM-dd HH:mm'}} : {{task.Name}}
                     </a>
                     <button type="button" class="close" aria-label="Close" ng-click="DeleteTask($event)" taskid="{{task.Id}}">
                         <span aria-hidden="true">&times;</span>
