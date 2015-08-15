@@ -1,0 +1,14 @@
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Debug\BrainExtension.DataProvider.dll
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Debug\BrainExtension.DataProvider.pdb
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Debug\BrainExtension.Data.dll
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Debug\BrainExtension.Data.pdb
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\obj\Debug\BrainExtension.DataProvider.csprojResolveAssemblyReference.cache
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\obj\Debug\BrainExtension.DataProvider.dll
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\obj\Debug\BrainExtension.DataProvider.pdb
+C:\Git\BrainExtension\BrainExtension.DataProvider\obj\Debug\BrainExtension.DataProvider.csprojResolveAssemblyReference.cache
+C:\Git\BrainExtension\BrainExtension.DataProvider\obj\Debug\BrainExtension.DataProvider.dll
+C:\Git\BrainExtension\BrainExtension.DataProvider\bin\Debug\BrainExtension.DataProvider.dll
+C:\Git\BrainExtension\BrainExtension.DataProvider\bin\Debug\BrainExtension.DataProvider.pdb
+C:\Git\BrainExtension\BrainExtension.DataProvider\bin\Debug\BrainExtension.Data.dll
+C:\Git\BrainExtension\BrainExtension.DataProvider\bin\Debug\BrainExtension.Data.pdb
+C:\Git\BrainExtension\BrainExtension.DataProvider\obj\Debug\BrainExtension.DataProvider.pdb

@@ -1,0 +1,9 @@
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\bin\Release\BrainExtension.Logical.dll
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\bin\Release\BrainExtension.Logical.pdb
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\bin\Release\BrainExtension.Data.dll
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\bin\Release\BrainExtension.DataProvider.dll
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\bin\Release\BrainExtension.DataProvider.pdb
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\bin\Release\BrainExtension.Data.pdb
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\obj\Release\BrainExtension.Logical.csprojResolveAssemblyReference.cache
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\obj\Release\BrainExtension.Logical.dll
+C:\Projects\TaskMgtSystem\BrainExtension.Logical\obj\Release\BrainExtension.Logical.pdb

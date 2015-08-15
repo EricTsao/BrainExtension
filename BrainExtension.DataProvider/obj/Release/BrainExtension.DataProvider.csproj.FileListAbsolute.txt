@@ -1,0 +1,7 @@
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Release\BrainExtension.DataProvider.dll
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Release\BrainExtension.DataProvider.pdb
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Release\BrainExtension.Data.dll
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\bin\Release\BrainExtension.Data.pdb
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\obj\Release\BrainExtension.DataProvider.csprojResolveAssemblyReference.cache
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\obj\Release\BrainExtension.DataProvider.dll
+C:\Projects\TaskMgtSystem\BrainExtension.DataProvider\obj\Release\BrainExtension.DataProvider.pdb
