@@ -83,7 +83,6 @@
 </div>
 <div ng-app="TaskModule" ng-controller="TaskController">
     @{Html.RenderPartial("TaskTitleBar");}
-{{minWeekFromNow}} ~ {{maxWeekFromNow}}
      <a ng-click="GetCalendar('GetPast')" taskid="{{task.Id}}">
          Get more history
      </a>
