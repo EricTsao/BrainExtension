@@ -39,9 +39,9 @@ namespace TaskMgtSystem.Controllers.Task
         {
             task.IsDelete = false;
             task.CreateBy = User.Identity.Name;
-            task.CreateDateTime = DateTime.Now;
+            task.CreateDate = DateTime.Now;
             task.UpdateBy = User.Identity.Name;
-            task.UpdateDateTime = DateTime.Now;
+            task.UpdateDate = DateTime.Now;
 
             var taskList = new List<TaskItem>();
 
@@ -50,9 +50,9 @@ namespace TaskMgtSystem.Controllers.Task
             return Content(string.Join("\n", TaskManager.SaveTasks(taskList).Select(d => d.Id).ToArray()));
         }
 
-        public ActionResult QueryTasks()
+        public ActionResult QueryTasks(TaskQueryFilter filter)
         {
-            var taskList = TaskManager.QueryTasks(new TaskQueryFilter() { });
+            var taskList = TaskManager.QueryTasks(filter);
            
             return Json(taskList);
         }
@@ -100,7 +100,7 @@ namespace TaskMgtSystem.Controllers.Task
                         Date = day
                     };
 
-                    dayItem.Tasks = allTasks.Where(d => day >= d.StartDateTime.AddMinutes(-1 * timezoneOffset).Date && day <= d.EndDateTime.AddMinutes(-1 * timezoneOffset).Date).ToList();
+                    dayItem.Tasks = allTasks.Where(d => day >= d.StartDate.AddMinutes(-1 * timezoneOffset).Date && day <= d.EndDate.AddMinutes(-1 * timezoneOffset).Date).ToList();
 
                     days.Add(dayItem);
                 }

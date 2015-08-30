@@ -42,13 +42,14 @@
         }
     })
     .controller("TaskEditorController", function ($scope, $http) {
-        $scope.$on('TaskEditorOpen', function (event, TaskData) {
+        $scope.$on('TaskEditor.OpenTaskEditor', function (event, TaskData) {
             var now = new Date();
             var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             var startTime = new Date(1970, 0, 1, now.getHours(), 0, 0, 0);
             var endTime = new Date(1970, 0, 1, now.getHours(), 0, 0, 0);
-            $scope.CurrentTask = TaskData ? $.extend(true, {}, TaskData) : {
+
+            var defaultObj = {
                 Name: "",
                 Description: "",
                 StartDate: startDate,
@@ -56,23 +57,29 @@
                 EndDate: endDate,
                 EndTime: endTime,
                 Status: "Wait"
-            };
+            }
+
+            $scope.CurrentTask = TaskData ? $.extend(true, defaultObj, TaskData) : $.extend(true, {}, defaultObj);
         });
 
-        $scope.SaveCurrentTask = function (event) {
-            $scope.CurrentTask.StartDateTime = new Date($scope.CurrentTask.StartDate.getTime()).addHours($scope.CurrentTask.StartTime.getHours())
+        $scope.OnSaveClick = function (event) {
+            $scope.CurrentTask.StartDate = new Date($scope.CurrentTask.StartDate.getFullYear(), $scope.CurrentTask.StartDate.getMonth(), $scope.CurrentTask.StartDate.getDate()).addHours($scope.CurrentTask.StartTime.getHours())
 
-            $scope.CurrentTask.EndDateTime = new Date($scope.CurrentTask.EndDate.getTime()).addHours($scope.CurrentTask.EndTime.getHours())
+            $scope.CurrentTask.EndDate = new Date($scope.CurrentTask.EndDate.getFullYear(), $scope.CurrentTask.EndDate.getMonth(), $scope.CurrentTask.EndDate.getDate()).addHours($scope.CurrentTask.EndTime.getHours())
 
             $http.post("@Url.Content("~/Task/Edit")", $scope.CurrentTask)
             .success(function (data, status, headers, config) {
                 $scope.CurrentTask.Id = data;
                 alert("Save Task Success.");
-                $scope.$emit('TaskEditorSaveSuccess', $scope.CurrentTask);
+                $scope.$emit('TaskEditor.OnSavedSuccess', $scope.CurrentTask);
             })
             .error(function (data, status, headers, config) {
                 alert("Save Task Fail.");
             });
+        }
+
+        $scope.OnCancelClick = function (event) {
+            $scope.$emit('TaskEditor.OnCancelClick', $scope.CurrentTask);
         }
     });
 </script>
@@ -96,8 +103,6 @@
             <div class="form-inline col-sm-14">
                 <input datepicker type="date" class="form-control" ng-model="CurrentTask.StartDate">
                 <input hourpicker type="time" class="form-control" ng-model="CurrentTask.StartTime" />
-                {{CurrentTask.StartDate | date : 'yyyy-MM-dd'}}
-                {{CurrentTask.StartTime | date : 'HH:ss'}}
             </div>
         </div>
         <div class="form-group">
@@ -105,8 +110,6 @@
             <div class="form-inline col-sm-14">
                 <input datepicker type="date" class="form-control" ng-model="CurrentTask.EndDate">
                 <input hourpicker type="time" class="form-control" ng-model="CurrentTask.EndTime" />
-                {{CurrentTask.EndDate | date : 'yyyy-MM-dd'}}
-                {{CurrentTask.EndTime | date : 'HH:ss'}}
             </div>
         </div>
         <div class="form-group">
@@ -120,8 +123,8 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-14">
-                <button type="button" class="btn btn-default" ng-click="SaveCurrentTask($event)">Submit</button>
-                <button type="button" class="btn btn-default" ng-click="Cancel($event)">Cancel</button>
+                <button type="button" class="btn btn-default" ng-click="OnSaveClick($event)">Submit</button>
+                <button type="button" class="btn btn-default" ng-click="OnCancelClick($event)">Cancel</button>
             </div>
         </div>
     </div>

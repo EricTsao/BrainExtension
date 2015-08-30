@@ -19,11 +19,9 @@ namespace BrainExtension.Data
 
         public DateTime StartDate { get; set; }
         public DateTime StartTime { get; set; }
-        public DateTime StartDateTime { get; set; }
 
         public DateTime EndDate { get; set; }
         public DateTime EndTime { get; set; }
-        public DateTime EndDateTime { get; set; }
 
         public string Status { get; set; }
 
@@ -31,11 +29,11 @@ namespace BrainExtension.Data
 
         public string CreateBy { get; set; }
 
-        public DateTime CreateDateTime { get; set; }
+        public DateTime CreateDate { get; set; }
 
         public string UpdateBy { get; set; }
 
-        public DateTime UpdateDateTime { get; set; }
+        public DateTime UpdateDate { get; set; }
 
         public List<Member> Members { get; set; }
     }
@@ -44,5 +42,10 @@ namespace BrainExtension.Data
     {
         public DateTime? StartDateMin { get; set; }
         public DateTime? StartDateMax { get; set; }
+        public List<string> StatusList { get; set; }
+
+        public TaskQueryFilter() {
+            StatusList = new List<string>();
+        }
     }
 }
