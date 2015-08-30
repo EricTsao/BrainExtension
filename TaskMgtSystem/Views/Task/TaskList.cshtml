@@ -67,7 +67,7 @@
         }
 
         $scope.OnDeleteClicked = function (event) {
-            var taskId = $(event.target).attr("taskId");
+            var taskId = $(event.currentTarget).attr('taskId');
 
             $http
                 .post("@Url.Content("~/Task/Delete")", { Id: taskId })
