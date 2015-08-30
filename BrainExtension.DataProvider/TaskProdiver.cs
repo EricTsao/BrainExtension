@@ -28,14 +28,14 @@ namespace BrainExtension.DataProvider
                     cmd.Parameters.AddWithValue("Id", task.Id);
                     cmd.Parameters.AddWithValue("Name", task.Name);
                     cmd.Parameters.AddWithValue("Description", task.Description);
-                    cmd.Parameters.AddWithValue("StartDateTime", task.StartDateTime.ToUniversalTime());
-                    cmd.Parameters.AddWithValue("EndDateTime", task.EndDateTime.ToUniversalTime());
+                    cmd.Parameters.AddWithValue("StartDate", task.StartDate.ToUniversalTime());
+                    cmd.Parameters.AddWithValue("EndDate", task.EndDate.ToUniversalTime());
                     cmd.Parameters.AddWithValue("Status", task.Status);
                     cmd.Parameters.AddWithValue("IsDelete", task.IsDelete);
                     cmd.Parameters.AddWithValue("CreateBy", task.CreateBy);
-                    cmd.Parameters.AddWithValue("CreateDateTime", task.CreateDateTime.ToUniversalTime());
+                    cmd.Parameters.AddWithValue("CreateDate", task.CreateDate.ToUniversalTime());
                     cmd.Parameters.AddWithValue("UpdateBy", task.UpdateBy);
-                    cmd.Parameters.AddWithValue("UpdateDateTime", task.UpdateDateTime.ToUniversalTime());
+                    cmd.Parameters.AddWithValue("UpdateDate", task.UpdateDate.ToUniversalTime());
 
                     cmd.ExecuteNonQuery();
                 }
@@ -53,32 +53,41 @@ namespace BrainExtension.DataProvider
                 conn.Open();
                 SqlCommand cmd = conn.CreateCommand();
 
-                string queryString = @"
-SELECT [Id]
-      ,[Name]
-      ,[Description]
-      ,[StartDateTime]
-      ,[EndDateTime]
-      ,[Status]
-      ,[IsDelete]
-      ,[CreateBy]
-      ,[CreateDateTime]
-      ,[UpdateBy]
-      ,[UpdateDateTime]
-  FROM [dbo].[Task]
-  WHERE IsDelete = 0
-";
-                if (filter.StartDateMin.HasValue)
+                string queryString = "";
+                if (filter != null && filter.StartDateMin.HasValue)
                 {
-                    queryString = queryString + " AND StartDateTime >= @StartDateMin";
+                    queryString = queryString + " AND StartDate >= @StartDateMin";
                     cmd.Parameters.AddWithValue("StartDateMin", filter.StartDateMin.Value);
                 }
 
-                if (filter.StartDateMax.HasValue)
+                if (filter != null && filter.StartDateMax.HasValue)
                 {
-                    queryString = queryString + " AND StartDateTime < @StartDateMax";
+                    queryString = queryString + " AND StartDate < @StartDateMax";
                     cmd.Parameters.AddWithValue("StartDateMax", filter.StartDateMax.Value.AddDays(1));
                 }
+
+                if (filter != null && filter.StatusList.Count > 0)
+                {
+                    queryString = queryString + " AND [Status] IN (" + string.Join(",", filter.StatusList.Select(d => string.Format("'{0}'", d)).ToArray()) + ")";
+                }
+
+                queryString = string.Format(@"
+SELECT [Id]
+      ,[Name]
+      ,[Description]
+      ,[StartDate]
+      ,[EndDate]
+      ,[Status]
+      ,[IsDelete]
+      ,[CreateBy]
+      ,[CreateDate]
+      ,[UpdateBy]
+      ,[UpdateDate]
+  FROM [dbo].[Task]
+  WHERE IsDelete = 0
+  {0}
+  ORDER BY [StartDate]
+", queryString);
 
                 cmd.CommandText = queryString;
 
@@ -88,8 +97,8 @@ SELECT [Id]
                     {
                         while (rd.Read())
                         {
-                            var startDateTime = new DateTime(((DateTime)rd["StartDateTime"]).Ticks, DateTimeKind.Utc);
-                            var endDateTime = new DateTime(((DateTime)rd["EndDateTime"]).Ticks, DateTimeKind.Utc);
+                            var startDateTime = new DateTime(((DateTime)rd["StartDate"]).Ticks, DateTimeKind.Utc);
+                            var endDateTime = new DateTime(((DateTime)rd["EndDate"]).Ticks, DateTimeKind.Utc);
                             var minDate = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
                             result.Add(new TaskItem()
@@ -97,18 +106,16 @@ SELECT [Id]
                                 Id=rd["Id"].ToString(),
                                 Name = rd["Name"].ToString(),
                                 Description = rd["Description"].ToString(),
-                                StartDateTime = startDateTime,
-                                StartDate = startDateTime.Date,
+                                StartDate = startDateTime,
                                 StartTime = minDate + startDateTime.TimeOfDay,
-                                EndDateTime = endDateTime,
-                                EndDate = endDateTime.Date,
-                                EndTime = minDate + startDateTime.TimeOfDay,
+                                EndDate = endDateTime,
+                                EndTime = minDate + endDateTime.TimeOfDay,
                                 Status = rd["Status"].ToString(),
                                 IsDelete = (bool)rd["IsDelete"],
                                 CreateBy = rd["CreateBy"].ToString(),
-                                CreateDateTime = (DateTime)rd["CreateDateTime"],
+                                CreateDate = (DateTime)rd["CreateDate"],
                                 UpdateBy = rd["UpdateBy"].ToString(),
-                                UpdateDateTime = (DateTime)rd["UpdateDateTime"]
+                                UpdateDate = (DateTime)rd["UpdateDate"]
                             });
                         }
                     }
@@ -118,7 +125,7 @@ SELECT [Id]
             return result;
         }
 
-        public static List<TaskItem> QueryTasksByDateRange(DateTime StartDateTime, DateTime EndDateTime)
+        public static List<TaskItem> QueryTasksByDateRange(DateTime StartDate, DateTime EndDate)
         {
             var result = new List<TaskItem>();
 
@@ -133,24 +140,24 @@ SELECT [Id]
 SELECT [Id]
       ,[Name]
       ,[Description]
-      ,[StartDateTime]
-      ,[EndDateTime]
+      ,[StartDate]
+      ,[EndDate]
       ,[Status]
       ,[IsDelete]
       ,[CreateBy]
-      ,[CreateDateTime]
+      ,[CreateDate]
       ,[UpdateBy]
-      ,[UpdateDateTime]
+      ,[UpdateDate]
   FROM [dbo].[Task]
   WHERE  IsDelete = 0 AND
   (
       1=2
-      OR ([StartDateTime] >= @StartDateTime AND [StartDateTime] < @EndDateTime)
-      OR ([EndDateTime] >= @StartDateTime AND [EndDateTime] < @EndDateTime)
+      OR ([StartDate] >= @StartDate AND [StartDate] < @EndDate)
+      OR ([EndDate] >= @StartDate AND [EndDate] < @EndDate)
   )
 ";
-                cmd.Parameters.AddWithValue("StartDateTime", StartDateTime);
-                cmd.Parameters.AddWithValue("EndDateTime", EndDateTime.AddDays(1));
+                cmd.Parameters.AddWithValue("StartDate", StartDate);
+                cmd.Parameters.AddWithValue("EndDate", EndDate.AddDays(1));
             
                 cmd.CommandText = queryString;
 
@@ -165,18 +172,16 @@ SELECT [Id]
                                 Id = rd["Id"].ToString(),
                                 Name = rd["Name"].ToString(),
                                 Description = rd["Description"].ToString(),
-                                StartDateTime = (DateTime)rd["StartDateTime"],
-                                StartDate = ((DateTime)rd["StartDateTime"]).Date,
-                                StartTime = DateTime.MinValue + ((DateTime)rd["StartDateTime"]).TimeOfDay,
-                                EndDateTime = (DateTime)rd["EndDateTime"],
-                                EndDate = ((DateTime)rd["EndDateTime"]).Date,
-                                EndTime = DateTime.MinValue + ((DateTime)rd["EndDateTime"]).TimeOfDay,
+                                StartDate = (DateTime)rd["StartDate"],
+                                StartTime = DateTime.MinValue + ((DateTime)rd["StartDate"]).TimeOfDay,
+                                EndDate = (DateTime)rd["EndDate"],
+                                EndTime = DateTime.MinValue + ((DateTime)rd["EndDate"]).TimeOfDay,
                                 Status = rd["Status"].ToString(),
                                 IsDelete = (bool)rd["IsDelete"],
                                 CreateBy = rd["CreateBy"].ToString(),
-                                CreateDateTime = (DateTime)rd["CreateDateTime"],
+                                CreateDate = (DateTime)rd["CreateDate"],
                                 UpdateBy = rd["UpdateBy"].ToString(),
-                                UpdateDateTime = (DateTime)rd["UpdateDateTime"]
+                                UpdateDate = (DateTime)rd["UpdateDate"]
                             });
                         }
                     }

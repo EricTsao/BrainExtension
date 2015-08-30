@@ -1,12 +1,27 @@
 ﻿<script>
-    angular.module("TaskMgt", ["TaskMgt.TaskEditor"])
+    angular.module("TaskMgt", ["TaskMgt.TaskEditor","TaskMgt.TaskList"])
     .controller("TaskMgtController", function ($scope, $http) {
-        $scope.$on('TaskEditorSaveSuccess', function (event, SavedTask) {
+        $scope.$on('TaskEditor.OnSavedSuccess', function (event, savedTask) {
             alert("got it");
+            $scope.$broadcast('TaskList.QueryTasks', null);
+            $scope.currentArea = "TaskList";
         });
-        $scope.OpenTaskEditor = function (event) {
-            $scope.$broadcast('TaskEditorOpen', null);
-        };
+
+        $scope.$on('TaskEditor.OnCancelClick', function (event, currentTask) {
+            $scope.currentArea = "TaskList";
+        });
+
+        $scope.$on('TaskList.OnNewTaskClicked', function (event, currentTask) {
+            $scope.$broadcast('TaskEditor.OpenTaskEditor', null);
+            $scope.currentArea = "TaskEditor";
+        });
+
+        $scope.$on('TaskList.OnTaskTitleClicked', function (event, currentTask) {
+            $scope.$broadcast('TaskEditor.OpenTaskEditor', currentTask);
+            $scope.currentArea = "TaskEditor";
+        });
+
+        $scope.currentArea = "TaskList";
     });
 </script>
 <div ng-app="TaskMgt">
@@ -14,9 +29,11 @@
         <h1>Task Manager</h1>
     </div>
     <div ng-controller="TaskMgtController">
-        <div>
+        <div ng-show="currentArea=='TaskEditor'">
             @{Html.RenderPartial("TaskEditor");}
         </div>
-        <button type="button" class="btn btn-default" ng-click="OpenTaskEditor($event)">Open</button>
+        <div ng-show="currentArea=='TaskList'">
+            @{Html.RenderPartial("TaskList");}
+        </div>
     </div>
 </div>

@@ -1,0 +1,112 @@
+﻿<script>
+    function ConvertToClientObj(obj) {
+        var pattern = /Date\(([^)]+)\)/;
+        for (var key in obj) {
+            if (typeof obj[key] === 'object') {
+                ConvertToClientObj(obj[key]);
+            } else if (typeof obj[key] === 'string' && pattern.test(obj[key])) {
+                var results = pattern.exec(obj[key]);
+                var date = new Date(parseFloat(results[1]));
+                obj[key] = date;
+            }
+        }
+    }
+
+    angular.module("TaskMgt.TaskList", [])
+    .controller("TaskListController", function ($scope, $http) {
+        $scope.StatusList = ['Wait', 'Done', 'Cancel'];
+        $scope.SelectedStatusList = [];
+
+        $scope.toggleSelectedStatusList = function (status) {
+            var idx = $scope.SelectedStatusList.indexOf(status);
+
+            if (idx > -1) {
+                $scope.SelectedStatusList.splice(idx, 1);
+            }
+            else {
+                $scope.SelectedStatusList.push(status);
+            }
+        };
+
+        $scope.$on('TaskList.QueryTasks', function (event, filter) {
+            $scope.QueryTasks();
+        });
+
+        $scope.QueryTasks = function () {
+            var filter = {};
+            filter.StatusList = $scope.SelectedStatusList;
+
+            $http
+            .post("@Url.Content("~/Task/QueryTasks")", filter)
+            .success(function (data, status, headers, config) {
+                ConvertToClientObj(data);
+
+                $scope.tasks = data;
+            })
+            .error(function (data, status, headers, config) {
+
+            });
+        }
+
+        $scope.OnNewTaskClicked = function (event) {
+            $scope.$emit('TaskList.OnNewTaskClicked');
+        }
+
+        $scope.OnTaskTitleClicked = function (event) {
+            var taskId = $(event.target).attr("taskId");
+
+            var currentTask = {};
+            for (var i in $scope.tasks) {
+                if ($scope.tasks[i].Id == taskId) {
+                    currentTask = $scope.tasks[i];
+                    break;
+                }
+            }
+
+            $scope.$emit('TaskList.OnTaskTitleClicked', currentTask);
+        }
+
+        $scope.OnDeleteClicked = function (event) {
+            var taskId = $(event.target).attr("taskId");
+
+            $http
+                .post("@Url.Content("~/Task/Delete")", { Id: taskId })
+                .success(function (data, status, headers, config) { })
+                .error(function (data, status, headers, config) { });
+
+            $scope.QueryTasks();
+        }
+
+        $scope.QueryTasks();
+    })
+</script>
+
+<div ng-controller="TaskListController">
+    <div class="form-inline">
+        <div class="checkbox" ng-repeat="status in StatusList">
+            <label>
+                <input
+                    class="form-control"
+                    type="checkbox"
+                    name="ckbStatusList"
+                    value="{{status}}"
+                    ng-checked="SelectedStatusList.indexOf(status) > -1"
+                    ng-click="toggleSelectedStatusList(status)" />
+                {{status}}
+            </label>
+        </div>
+        <button type="button" class="btn btn-default" ng-click="QueryTasks($event)">Search</button>
+        <button type="button" class="btn btn-default" ng-click="OnNewTaskClicked($event)">New Task</button>
+        <div ng-repeat="task in tasks">
+            <div class="col-sm-16">
+                <a ng-click="OnTaskTitleClicked($event)" taskid="{{task.Id}}">{{task.StartDate | date : 'yyyy-MM-dd HH:mm'}} ~ {{task.EndDate | date : 'yyyy-MM-dd HH:mm'}} : {{task.Name}}
+                </a>
+                <button type="button" class="close" aria-label="Close" ng-click="OnDeleteClicked($event)" taskid="{{task.Id}}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="col-sm-16">
+                <pre>{{task.Description}}</pre>
+            </div>
+        </div>
+</div>

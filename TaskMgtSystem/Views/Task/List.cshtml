@@ -20,10 +20,6 @@
                 var results = pattern.exec(obj[key]);
                 var date = new Date(parseFloat(results[1]));
                 obj[key] = date;
-                //var utcDate = convertDateToUTC(date);
-                //var localDate = createDateAsUTC(utcDate);
-                //var utcDate2 = localDate.toUTCString();
-                //obj[key] = localDate;
             }
         }
     }
@@ -96,22 +92,12 @@
         }
 
         $scope.DeleteTask = function (event) {
-           var taskId = $(event.target).attr("taskId");
+            var taskId = $(event.target).attr("taskId");
 
-            $http.post("@Url.Content("~/Task/Delete")", { Id: taskId })
-           .success(function (data, status, headers, config) {
-               if (data == "Done") {
-                   for (var i in $scope.tasks) {
-                       if ($scope.tasks[i].Id == taskId) {
-                           $scope.tasks.splice(i, 1);
-                           break;
-                       }
-                   }
-               }
-           })
-           .error(function (data, status, headers, config) {
-
-           });
+            $http
+                .post("@Url.Content("~/Task/Delete")", { Id: taskId })
+                .success(function (data, status, headers, config) {})
+                .error(function (data, status, headers, config) {});
         }
 
         $scope.SaveCurrentTask = function (event) {
@@ -119,18 +105,19 @@
 
             ConvertToServerObj(postData);
 
-            $http.post("@Url.Content("~/Task/Edit")", postData)
-            .success(function (data, status, headers, config) {
-                if (!$scope.currentTask.Id) {
-                    $scope.currentTask.Id = data;
-                    $scope.tasks.push($scope.currentTask);
-                }
+            $http
+                .post("@Url.Content("~/Task/Edit")", postData)
+                .success(function (data, status, headers, config) {
+                    if (!$scope.currentTask.Id) {
+                        $scope.currentTask.Id = data;
+                        $scope.tasks.push($scope.currentTask);
+                    }
 
-                $scope.currentArea = "ListArea";
-            })
-            .error(function (data, status, headers, config) {
+                    $scope.currentArea = "ListArea";
+                })
+                .error(function (data, status, headers, config) {
 
-            });
+                });
         }
 
         $scope.CreateNewTask = function (event) {
